@@ -43,3 +43,12 @@ while request != "quit":
 
 
 # SO THIS IS GIVING US IDEA HOW ROUTING CAN BE HANDLE ROUTING LIKE THIS
+
+
+# >   /shipment
+# <Shipment<1001, in transit>
+
+# >   /root
+# Not found
+# >   quit
+# Not found

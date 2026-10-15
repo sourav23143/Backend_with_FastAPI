@@ -36,7 +36,7 @@ def custom_fence(fence: str = '+'):
 
 @custom_fence("-")
 def log(text: str):
-    print("text")
+    print(text)
 
 
 log("ballon")
@@ -46,5 +46,5 @@ log("ballon")
 #output >>
 
 # ------
-# text
+# ballon
 # ------

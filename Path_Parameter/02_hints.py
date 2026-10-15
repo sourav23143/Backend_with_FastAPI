@@ -14,8 +14,9 @@ from typing import Any
 # A Callable can take arguments which can more than one and also return something
 # and we can hints on those types as well 
 
-
-
+# def decorator(func: Callable[[int, int], float]):  #addition of two numbers
+#     pass
+ 
 def decorator(func: Callable[[Any], None]): #Callable[[Input Argument], Output]
     pass
 
