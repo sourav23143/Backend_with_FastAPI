@@ -5,8 +5,7 @@ from typing import Any
 app = FastAPI()
 
 
-#TILL NOW WE HAVE USED HARD CODED DATA INSIDE OUR ROUTES
-#LET SAY INSTED WE HAVE SOME SHIPMENTS AND FROM THAT WE WILL GET THE SHIPMENT BASED ON "ID" PROVIDED OR GET THE LATEST ONE FROM THE SAME 
+
 
 
 shipments = {
@@ -54,39 +53,55 @@ shipments = {
     }
 }
 
-#now we have our shipments data and now we can use it inside our route functions
+
+#QUERY PARAMETER
+
+# @app.get("/shipment")
+# def get_shipment(id: int) -> dict[str, Any]:
+#     if id not in shipments:
+#         return {"details": "Given id doesn't exist!"}
+#     return shipments[id]
 
 
-#IF WE PASS ANY ID TO OUR ROUTE WHICH IS NOT PRESENT THEN IT WILL GIVE US INTERNAL SERVER ERROR, SO FOR THIS WE HAVE TO DO ERROR HANDLING
-#I.E IF ID IS NOT PRESENT INSIDE THE DICTIONARY WE NEED TO RETURN SOME MESSAGES I.E "GIVEN ID DOES NOT EXIST"
+#QUERY PARAMETER>
+# http://127.0.0.1:8000/shipment?id=12702  >
 
-#latest 
-@app.get("/shipment/latest")
-def get_latest_shipment() -> dict[str, Any]:
-    id = max(shipments.keys())
-    return shipments[id]
-
-
-#IF WE PASS ANY ID TO OUR ROUTE WHICH IS NOT PRESENT THEN IT WILL GIVE US INTERNAL SERVER ERROR, SO FOR THIS WE HAVE TO DO ERROR HANDLING
-#I.E IF ID IS NOT PRESENT INSIDE THE DICTIONARY WE NEED TO RETURN SOME MESSAGES I.E "GIVEN ID DOES NOT EXIST"
+# {
+#   "id": 12702,
+#   "content": "wooden table",
+#   "weight": 1.2,
+#   "status": "in transit"
+# }
 
 
+#IMP > JUST LIKE PATH PARAMETER, QUERY PARAMETERS HAVE VALIADTION AND OTHER THING AS WELL 
+#I.E IF WE PASS STRING/FLOAT VALUE WE WILL GET ERROR
 
-# /shipment/12701  > 1270 will be caught by fastapi and provided to same inside our router function
-@app.get("/shipment/{id}")
-def get_shipment(id: int | float) -> dict[str, Any]:
+#IF WE DONT PASS ID QUERY PARAMTER IN OUR REQUEST THAN WE WILL GET AN ERROR > ID QUERY PARAMETER IS MISSING
+
+# SO WE CAN MAKE IT OPTIONAL AS WELL, BY USING TYPE HINT
+
+
+@app.get("/shipment")
+def get_shipment(id: int | None = None) -> dict[str, Any]:
+    if not id:
+        id = max(shipments.keys())
+        return shipments[id]
     if id not in shipments:
         return {"details": "Given id doesn't exist!"}
     return shipments[id]
 
+# not id asks whether id is false-like, such as None, 0, or "".
+# id not in shipments asks whether id is not a key in the shipments dictionary.
 
 
-
-# CUSTOM DOCUMENTATION USING OPEN API SPECIFICATION
 @app.get("/scalar", include_in_schema=False)
 def get_return_docs():
     return get_scalar_api_reference(
         openapi_url = app.openapi_url,
         title = "Scalar API"
     )
+
+
+
 
