@@ -11,7 +11,7 @@ def random_destination():
 #_________________________________________________________________________________________________________
 #Enum 
 
-class ShipmentStatus(str, Enum):
+class ShipmentStatus(str, Enum): #str makes each enum member a string as well as an enum member.
     placed = "placed"
     transit = "in_transit"
     packed = "packed"

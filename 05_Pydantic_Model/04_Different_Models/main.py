@@ -9,7 +9,7 @@ from fastapi import FastAPI, HTTPException, status
 from scalar_fastapi import get_scalar_api_reference
 from typing import Any
 
-from .schemas import Shipment, ShipmentStatus
+from .schemas import ShipmentStatus, ShipmentRead, ShipmentCreate, ShipmentUpdate
 
 app = FastAPI()
 
@@ -66,7 +66,7 @@ shipments = {
 
 
 
-@app.get("/shipment", response_model = Shipment) #hinting resonse model > WE USE IT WHEN WE ARE PROVIDING DIFFERENT TYPE, IN THIS CASE A LOOSELY TYPE DICTIONARY AND WE WANT TO IT VALIDATED AGAINST THIS SCHEMA
+@app.get("/shipment", response_model = ShipmentRead) #hinting resonse model > WE USE IT WHEN WE ARE PROVIDING DIFFERENT TYPE, IN THIS CASE A LOOSELY TYPE DICTIONARY AND WE WANT TO IT VALIDATED AGAINST THIS SCHEMA
 def get_shipment(id: int | None = None):
     if id not in shipments:
         raise HTTPException(
@@ -79,14 +79,24 @@ def get_shipment(id: int | None = None):
 
 
 @app.post("/shipment")
-def submit_shipment(shipment: Shipment) -> dict[str, Any]:  
+def submit_shipment(shipment: ShipmentCreate) -> dict[str, Any]:  
 
     # Create and assign shipment a new id 
     new_id = max(shipments.keys()) + 1
 
+    # shipments[new_id] = {
+    #     "content": shipment.content,
+    #     "weight":shipment.weight,
+    #     "destination": shipment.destination,
+    #     "status": "placed"
+    # }
+
+    #we can also convert our Schema  Pydantic Model  into dict as well, using model_dump method on our shipment
+    # shipment.model_dump() #Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.
+    # so we will simply unpack it inside our dictionary
+
     shipments[new_id] = {
-        "content": shipment.content,
-        "weight":shipment.weight,
+        **shipment.model_dump(),
         "status": "placed"
     }
 
@@ -96,23 +106,10 @@ def submit_shipment(shipment: Shipment) -> dict[str, Any]:
 
 
 
-
-
-
-@app.put("/shipment")
-def shipment_update(id: int, content: str, weight: float, staus: str) -> dict[str, Any]:
-    shipments[id] = {   
-        "content": content,
-        "weight": weight,
-        "status": staus,
-    }
-    return shipments[id]
-
-
-@app.patch("/shipment")
+@app.patch("/shipment", response_model = ShipmentRead)
 def patch_shipment(
     id: int, 
-    body: dict[str, ShipmentStatus]
+    body: ShipmentUpdate
     ) -> dict[str, Any]:
 
     shipment = shipments[id]

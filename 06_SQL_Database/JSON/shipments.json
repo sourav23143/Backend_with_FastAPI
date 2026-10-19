@@ -1,0 +1,50 @@
+[
+    {"id" : "12701",
+        "content": "glassware",
+        "weight": 2.6,
+        "destination": 124773,
+        "status":  "placed"
+    },
+    {   "id": "12702",
+        "content": "wooden table",
+        "weight": 1.2,
+        "destination": 124774,
+        "status": "in_transit"
+    },
+    {
+        "id": "12702",
+        "content": "electronics",
+        "weight": 2.4,
+        "destination": 124775,
+        "status": "packed"
+    },
+    {
+        "id": "12702",
+        "content": "textiles",
+        "weight": 3.1,
+        "destination": 124776,
+        "status": "delivered"
+    },
+    {
+        "id": "12702",
+        "content": "ceramics",
+        "weight": 10.9,
+        "destination": 124777,
+        "status": "in_transit"
+    },
+    {
+        "id": "12702",
+        "content": "machinery",
+        "weight": 5.7,
+        "destination": 124778,
+        "status": "packed"
+    },
+    {
+        "id": "12702",
+        "content": "furniture",
+        "weight": 4.6,
+        "destination": 124779,
+        "status": "delivered"
+    }
+]
+
