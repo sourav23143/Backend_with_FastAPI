@@ -10,7 +10,7 @@ from scalar_fastapi import get_scalar_api_reference
 from typing import Any
 
 from .schemas import ShipmentStatus, ShipmentRead, ShipmentCreate, ShipmentUpdate
-from .database import shipments
+from .database import save, shipments
 
 
 
@@ -56,8 +56,11 @@ def submit_shipment(shipment: ShipmentCreate) -> dict[str, Any]:
 
     shipments[new_id] = {
         **shipment.model_dump(),
+        "id": new_id,
         "status": "placed"
     }
+    save()
+
 
     return {"id": new_id}
 
@@ -75,10 +78,10 @@ def patch_shipment(
     # Update the provided filds
     # instead of picking each field one by one , we can take our shipment which is a dict and upadte it with another dictionary using the update method
 
-    shipment.update(body) #D.update([E, ]**F) -> None. Update D from mapping/iterable E and F.
-
+    shipment.update(body.model_dump(exclude_none=True)) #D.update([E, ]**F) -> None. Update D from mapping/iterable E and F.
     shipments[id] = shipment
-    return shipment
+    save()
+    return shipment[id]
 
 
 
