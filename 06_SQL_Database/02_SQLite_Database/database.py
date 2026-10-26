@@ -97,13 +97,45 @@ cursor.execute("""
 
 # 4. Update a shipment 
 
+# cursor.execute("""
+#     UPDATE shipment SET status = 'in_transit'
+#     WHERE id = 12701
+# """)
+
+# connection.commit()
+
+# when using the update query, we provide the value inside of the same in above case,  but in this case we will receive the same from the API Client
+# i.e something like a paramter or function argument which we want to be included in query string 
+
+# Update values 
+id = 12701
+status = "out_for_delivery"
+
+
+# ONE WAY > 
+
+# cursor.execute(f"""
+#     UPDATE shipment SET status = '{status}'
+#     WHERE id = {id}
+# """)
+
+# ANOTHER WAY > 
+
 cursor.execute("""
-    UPDATE shipment SET status = 'in_transit'
-    WHERE id = 12701
-""")
+    UPDATE shipment SET status = :status
+    WHERE id = :id    
+""",
+    {"status": status, "id": id})
+
+
+
+
+
+# USING FORMATTED STRINGS LIKE THIS TO FORMAT OUR VALUES INSIDE THE SQL QUERIES IS NOT RECOMMENDED
+
+#REASON > SQL QUERY IS NOT TYPE VALIDATED HERE 
 
 connection.commit()
-
 
 
 
