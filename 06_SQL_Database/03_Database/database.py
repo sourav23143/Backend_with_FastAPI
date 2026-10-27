@@ -1,5 +1,5 @@
 import sqlite3
-from schemas import ShipmentCreate, ShipmentUpdate
+from .schemas import ShipmentCreate, ShipmentUpdate
 from typing import Any
 
 #______________________________________________________________________________________________________________________
@@ -17,28 +17,28 @@ class Database:
     def __init__(self):  #i.e when we initialize our instance we'll go ahead and make a connection with our database
     
         #database connection
-        self.conn = sqlite3.connect("sqlite.db") #path
+        self.conn = sqlite3.connect("sqlite.db", check_same_thread=False) #path # and running database connection on diff thread > i,e we dont want to check same thread, but check another one
         # get cursor to execute queries and fetch data
         self.cur = self.conn.cursor() # using our cursor we can execute sql language i.e our query
         # Create table if not exists
-        self.create_table("shipment")
+        self.create_table()
 
     #Create table if not exists
-    def create_table(self, name: str):
+    def create_table(self):
 
         # 1. Create table with columns
         self.cur.execute("""
-            CREATE TABLE IF NOT EXISTS ? (
+            CREATE TABLE IF NOT EXISTS shipment (
             id INTEGER PRIMARY KEY,
             content TEXT,
             weight REAL,
             status TEXT
             )
-        """, (name,))
+        """)
 
     def create(self, shipment: ShipmentCreate) -> int:
         # Find as new id
-        self.cur.execute("SELECT MAX(id) FROM shipment")
+        self.cur.execute("SELECT COALESCE(MAX(id), 0) FROM shipment")
         result = self.cur.fetchone()
 
 
@@ -78,7 +78,7 @@ class Database:
         } if row else None
 
 
-    def update(self, shipment: ShipmentUpdate) -> dict[str, Any]:
+    def update(self, id: int, shipment: ShipmentUpdate) -> dict[str, Any]:
 
         self.cur.execute("""
             UPDATE shipment SET status = :status
