@@ -1,0 +1,6 @@
+
+# ______________________________________________________________________________________
+
+# HERE WE WILL CREATE A CONNECTION AND MANAGE A SESSION WITH OUR DATABASE
+
+# AND INSTED OF MAKING A RAW CONNECTION WITH OUR SQLITE DATABASE, WE WILL GO AHEAD AND CREATE A SQLAlchemy ENGINE
