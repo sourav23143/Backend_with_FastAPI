@@ -12,13 +12,21 @@ class ShipmentStatus(str, Enum): #str makes each enum member a string as well as
 
 
 
-class Shipment(SQLModel):
+#______________________________________________________________________________________________
+
+# BY THIS MODEL DEFINATION WE CAN GENERATE THE TABLE INSIDE OUR DATABASE 
+
+#______________________________________________________________________________________________
+
+
+
+class Shipment(SQLModel, table=True):
 # By default sql model will use class name and convert it lowercase and then use it as our table name 
 
     # But we can go ahead and define custom one as well > 
     __tablename__ = "shipment"
 
-    id: int = Field(primary_key=True)
+    id: int = Field(default=None, primary_key=True) # now because primary key is set to True and now if we not provide any id, it will automatically generate a unique id which will be like incrementing to new one
     content: str
     weight: float = Field(le=25, )
     destination: int

@@ -111,6 +111,8 @@ class Database:
         print("closed statement ....")
         self.conn.close()
 
+
+
     # def __enter__(self):
     #     print("enter the context")
     #     # when we enter inside of our context we can go and run some code
@@ -163,5 +165,5 @@ def managed_db():
 
 with managed_db() as db:
     print(db.get(12701))
-    print(db.get(12702))
+    print(db.get(12702)) 
 
