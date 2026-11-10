@@ -1,3 +1,7 @@
+# CONTAINS ALL THE SCHEMAS RELATED TO SHIPMENT
+
+
+
 from datetime import datetime
 
 from pydantic import BaseModel

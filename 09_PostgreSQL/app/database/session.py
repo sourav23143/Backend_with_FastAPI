@@ -70,4 +70,4 @@ SessionDep = Annotated[AsyncSession, Depends(get_session)]  # When we hint on ar
 # When we hint on arguments type like this Annotation fastapi will check metadata and when it sees it is a Depends ,that is a dependency, it goes ahead and runs the function provided inside it 
 # and then provide values to our arguments 
 
-# SO BY THESE WE HAVE MADE CONNECTION WITH OUR POSTGRES DATABASE AND ALSO HAVE THE SESSION DEPENDENCY THAT IS ASYNCHRONOUS AND WE CAN PROVIDE IT TO THE ENDPOINTS AS WELL 
+# SO BY THESE WE HAVE MADE CONNECTION WITH OUR POSTGRES DATABASE AND ALSO HAVE THE SESSION DEPENDENCY THAT IS ASYNCHRONOUS AND WE CAN PROVIDE IT TO THE ENDPOINTS AS WELL  
