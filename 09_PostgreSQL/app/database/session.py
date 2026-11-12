@@ -29,9 +29,9 @@ engine = create_async_engine(
 
 async def create_db_tables():
     async with engine.begin() as connection:
-        from .models import Shipment
+        from app.database.models import Shipment
 
-        await connection.run_sync(SQLModel.metadata.create_all(bind=engine)) #Create all tables stored in this metadata.
+        await connection.run_sync(SQLModel.metadata.create_all) #Create all tables stored in this metadata.
 
 
 
@@ -49,7 +49,7 @@ async def create_db_tables():
 async def get_session():
     async_session = sessionmaker(
         bind=engine, #engine to bind with 
-        class_=AsyncSession, ##by default class we use to create instance is async session , but in this case we have asyncsession, we will provide that 
+        class_=AsyncSession, ##by default class we use to create instance is sync session , but in this case we have asyncsession, we will provide that 
 
         expire_on_commit=False # because we dont want to expire the connection with our database after we commit the changes, because we in some instance we refresh the databack as well after saving the changes
 

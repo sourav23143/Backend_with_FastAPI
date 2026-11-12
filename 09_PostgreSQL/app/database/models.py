@@ -1,5 +1,6 @@
 from enum import Enum
 from datetime import datetime
+from pydantic import EmailStr
 from sqlmodel import Field, SQLModel  # which we need to inherit to turn a normal Python class into a SQL model compatible with tables inside of our database
 
 
@@ -35,3 +36,16 @@ class Shipment(SQLModel, table=True):
 
 # BENIFIT OF USING A MODEL LIKE THIS IS NOT TO JUST DEFINE THE TABLE, AS WELL AS USE THIS MODEL TO GET DATA OR SEND DATA TO THE DATABASE AS WELL
 # I.E IF WE GET DATA BACK FROM OUR DATABASE SESSION, WE WILL GET IT AS AN INSTANCE OF THIS SHIPMENT CLASS
+
+
+class Seller(SQLModel, table = True):
+
+    # by default table name will be class name only, so we have not added any table name
+    id: int = Field(default=None, primary_key=True)
+    name: str
+
+    email: EmailStr
+    password_hash: str
+
+
+# NOW WE HAVE ADDED THE SELLER TABLE TO OUR DATABASE, NOW WE CAN GO AHEAD AND RECIEVE THE DATA FOR A NEW SELLER IN THE ENDPOINT

@@ -9,26 +9,20 @@
 
 
 from contextlib import asynccontextmanager
-from datetime import datetime, timedelta, timezone
-from typing import Any
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import FastAPI
 from scalar_fastapi import get_scalar_api_reference
-from sqlmodel import Session
-
-from app.database.models import Shipment, ShipmentStatus
-from app.database.session import SessionDep, create_db_tables, get_session
 
 # from .database import Database
-from .schemas import ShipmentCreate, ShipmentRead, ShipmentUpdate
-from app.api.router import router
+from app.api.router import master_router           #we can include master router inside our app, to include all of the app define inside our API
+from app.database.session import create_db_tables
 
 # we can use our lifespan handler to create our database table 
 # i.e inside of our lifespan handler we will create database table 
 
 @asynccontextmanager
 async def lifespan_handler(app: FastAPI):
-    create_db_tables() # calling the function to create database tables when the server is started
+    await create_db_tables() # calling the function to create database tables when the server is started
     yield
     print("...stopped!")
 
@@ -39,7 +33,7 @@ app = FastAPI(lifespan=lifespan_handler)
 
 
 
-app.include_router(router)
+app.include_router(master_router)
 
 #db = Database()
 
@@ -48,7 +42,10 @@ app.include_router(router)
 # database.py > TO HANDLE OUR JSON DATA
 
 
-
+# endpoint to create a new seller
+@app.post("/seller/signup")
+def register_seller(seller):
+    pass 
 
 
 
