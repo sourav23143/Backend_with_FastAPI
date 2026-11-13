@@ -7,7 +7,7 @@ from app.database.models import Shipment, ShipmentStatus
 from app.database.session import SessionDep, create_db_tables, get_session
 from app.services.shipment import ShipmentService
 
-from ..dependencies import ServiceDep
+from ..dependencies import ShipmentServiceDep
 
 # from .database import Database
 from ..schemas import ShipmentCreate, ShipmentRead, ShipmentUpdate
@@ -39,7 +39,7 @@ router = APIRouter(prefix="/shipment", tags=["Shipment"])
 @router.get(
     "/", response_model=ShipmentRead
 )  # hinting resonse model > WE USE IT WHEN WE ARE PROVIDING DIFFERENT TYPE, IN THIS CASE A LOOSELY TYPE DICTIONARY AND WE WANT TO IT VALIDATED AGAINST THIS SCHEMA
-async def get_shipment(id: int, service: ServiceDep):
+async def get_shipment(id: int, service: ShipmentServiceDep):
     # Check for shipment with given id
     shipment = await service.get(id)
 
@@ -74,7 +74,7 @@ async def get_shipment(id: int, service: ServiceDep):
 @router.post("/")
 async def submit_shipment(
     shipment: ShipmentCreate,
-    service: ServiceDep,
+    service: ShipmentServiceDep,
 ) -> Shipment:
     return await service.add(shipment)
 
@@ -113,7 +113,7 @@ async def submit_shipment(
 ### Update shipment by id
 @router.patch("/", response_model=ShipmentRead)
 async def update_shipment(
-    id: int, shipment_update: ShipmentUpdate, service: ServiceDep
+    id: int, shipment_update: ShipmentUpdate, service: ShipmentServiceDep
 ) -> dict[str, Any]:
 
     # Update data with given fields
@@ -148,7 +148,7 @@ async def update_shipment(
 
 ### Delete a shipment by id
 @router.delete("/")
-async def delete_shipment(id: int, service: ServiceDep) -> dict[str, str]:
+async def delete_shipment(id: int, service: ShipmentServiceDep) -> dict[str, str]:
     # Remove from database
     await service.delete(id)
     return {"detail": f"Shipment with id #{id} is deleted!"}

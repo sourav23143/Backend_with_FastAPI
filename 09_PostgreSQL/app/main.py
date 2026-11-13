@@ -14,7 +14,7 @@ from fastapi import FastAPI
 from scalar_fastapi import get_scalar_api_reference
 
 # from .database import Database
-from app.api.router import master_router           #we can include master router inside our app, to include all of the app define inside our API
+from app.api.router import master_router
 from app.database.session import create_db_tables
 
 # we can use our lifespan handler to create our database table 
@@ -42,10 +42,6 @@ app.include_router(master_router)
 # database.py > TO HANDLE OUR JSON DATA
 
 
-# endpoint to create a new seller
-@app.post("/seller/signup")
-def register_seller(seller):
-    pass 
 
 
 

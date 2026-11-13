@@ -49,3 +49,26 @@ class Seller(SQLModel, table = True):
 
 
 # NOW WE HAVE ADDED THE SELLER TABLE TO OUR DATABASE, NOW WE CAN GO AHEAD AND RECIEVE THE DATA FOR A NEW SELLER IN THE ENDPOINT
+
+
+
+
+
+
+# A database model defines the structure and constraints of stored data. A
+# database session is a temporary workspace used to query and modify that data.
+#
+# Key differences:
+#
+#   Aspect       Database Model                  Database Session
+#   ------------ ------------------------------  ------------------------------
+#   Purpose      Defines data structure.         Executes queries and transactions.
+#   Lifetime     Persistent; evolves with       Temporary; lasts for a unit of
+#                schema changes.                work or connection.
+#   Scope        Describes database entities.   Holds state for one interaction.
+#   Example      The Shipment SQLModel below.    A SQLAlchemy Session instance.
+#
+# In an ORM, model classes map fields to database tables. A session queries
+# model instances, stages changes, and commits transactions. Closing a session
+# releases its resources; uncommitted changes are generally rolled back.
+                       
