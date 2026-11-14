@@ -1,9 +1,11 @@
 
 # SERVICE FOR DATABASE INTERACTION FOR SELLER  
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.schemas.seller import SellerCreate
 from app.database.models import Seller
 from passlib.context import CryptContext
+from sqlalchemy import select
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -30,3 +32,28 @@ class SellerService:
         await self.session.refresh(seller)
 
         return seller
+
+    async def token(self, email, password) -> str:
+        # Validate the credentials
+
+        # Checking if we have any record in database with given email
+        # self.session.get(Seller, email) # generally it will work, but in this case it won't, because email is not primary key, insted id is primary key, so when we get get method on seesion we have to provide that as well 
+        result = await self.session.execute(
+            select(Seller).where(Seller.email == email)
+         ) # custom sql query with sqlachemy 
+
+        seller = result.scalar() #Fetch the first column of the first row, and close the result set.
+
+        if seller is None or password_context.verify(
+                    password, # plain password (secret)
+                    seller.password_hash, #password hash
+                ):
+            raise HTTPException(
+                status_code= status.HTTP_404_NOT_FOUND,
+                detail = "Email or password is incorrect",
+            )
+
+        seller # verified
+
+        
+        # so once we have validated a seller, now we can go ahead and encode the seller data into a token and provide it back as well 
