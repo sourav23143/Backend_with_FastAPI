@@ -5,7 +5,12 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import URL
 
-
+_base_config = SettingsConfigDict(
+        env_file="./.env",
+        env_ignore_empty=True,
+        extra="ignore", #if we have some extra in .env file ignore that (like some custom settings)
+    
+)
 
 class DatabaseSettings(BaseSettings):
     POSTGRES_SERVER: str
@@ -17,11 +22,7 @@ class DatabaseSettings(BaseSettings):
     # by this we have defined our fields, that is the environment variables which we wish to read, 
     # we have to point it to environment file as well , and for it we will use config 
 
-    model_config = SettingsConfigDict(
-        env_file="./.env",
-        env_ignore_empty=True,
-        extra="ignore", #if we have some extra in .env file ignore that (like some custom settings)
-    )
+    model_config = _base_config
 
 
     # for database connection url, we can add utility method to database setting class
@@ -42,3 +43,16 @@ class DatabaseSettings(BaseSettings):
 
 settings = DatabaseSettings() #now we can use it to read our enviromnet variables
 # settings.POSTGRES_URL #We can use it as attribute
+
+
+
+class SecuritySettings(BaseSettings):
+
+    JWT_SECRET: str
+    JWT_ALGORITHM: str
+
+    model_config = _base_config
+
+
+db_settings = DatabaseSettings()
+security_settings = SecuritySettings()
