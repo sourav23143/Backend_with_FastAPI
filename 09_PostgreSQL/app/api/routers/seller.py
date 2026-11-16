@@ -1,7 +1,11 @@
 from typing_extensions import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+
+from app.core.security import oauth2_scheme
+from app.utils import decode_access_token
+
 
 from ..schemas.seller import SellerCreate, SellerRead
 
@@ -23,7 +27,8 @@ async def register_seller(
 ### Login the seller
 @router.post("/token")
 async def login_seller(
-    request_form: Annotated[OAuth2PasswordRequestForm, Depends()]
+    request_form: Annotated[OAuth2PasswordRequestForm, Depends()],
+    service: SellerServiceDep,
     ): # insted of receiving email and password as query or path parameters, or creating a schema, we can use Oauth2 password request form to create a truly OAuth@ password flow
 
     #using this request_form we can access username and password provided by user(our API Client to perfom a login)
@@ -31,13 +36,35 @@ async def login_seller(
     
     # AFTER GETTING THE REQUEST FORM, THAT IS THE LOGIN CREDENTIALS, WE CAN VALIDATE THEM AS WELL AGAINST THE DATA IN OUR DATABASE
 
+    token = await service.token(request_form.username, request_form.password)
+
+    return {
+        "access_token": token,
+        "type": "jwt",
+    }
 
 
 
 
 
 
+# we want to protect the dashboard access to authenticated or only loged in user and for that we need to recieve access token in routehandler, And to do that, we simply need the Oauth2 password bearer and use it as a dependency in our endpoint
+@router.get("/dashboad")
+async def get_dashboard(token: Annotated[str, Depends(oauth2_scheme)]):
 
+    data =  decode_access_token(token)
+
+    if data is None: 
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid access token"
+        )
+
+    return {
+        "details": "Successfully Authenticated!",
+        "data": data
+        
+    }
 
 
 

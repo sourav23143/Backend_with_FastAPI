@@ -7,6 +7,7 @@ import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
+from app.utils import generate_access_token
 from app.config import security_settings
 from app.api.schemas.seller import SellerCreate
 from app.database.models import Seller
@@ -59,23 +60,33 @@ class SellerService:
                 detail = "Email or password is incorrect",
             )
 
-        # JWT Token generation
-        token = jwt.encode(
-            payload={
-            "user": {
-                "name": seller.name,
-                "email": seller.email
-            },#beacuse we have already validated seller, we don't need password in the payload, Optionally, if we wnat we can use another filed which can be used to expire this jwt token
-            "exp" : datetime.now() + timedelta(days=1),
-            },
-            algorithm=security_settings.JWT_ALGORITHM,
-            key= security_settings.JWT_SECRET, # insted of hardcoding them in this JWT encode function, we can pull them out as environment variable, so we can share them later on 
-        )
+        # # JWT Token generation
+        # token = jwt.encode(
+        #     payload={
+        #     "user": {
+        #         "name": seller.name,
+        #         "email": seller.email
+        #     },#beacuse we have already validated seller, we don't need password in the payload, Optionally, if we wnat we can use another filed which can be used to expire this jwt token
+        #     "exp" : datetime.now() + timedelta(days=1),
+        #     },
+        #     algorithm=security_settings.JWT_ALGORITHM,
+        #     key= security_settings.JWT_SECRET, # insted of hardcoding them in this JWT encode function, we can pull them out as environment variable, so we can share them later on 
+        # )
 
 
-        return token 
+        # return token 
 
     
         # so once we have validated a seller, now we can go ahead and encode the seller data into a token and provide it back as well 
         #FOR THIS WE HAVE TO GENERATE JWT TOKEN AND FOR CREATING JWT TOKEN WE NEED SPECIAL LIBRARY (IN PYTHON WE USE pyjwt)
         # when we install it called "pyjwt" and when we use it it called only "jwt" 
+
+        # JWT token generation 
+        token = generate_access_token(data={
+            "user": {
+                "name": seller.name,
+                "email": seller.email,
+            }
+        })
+
+        return token
