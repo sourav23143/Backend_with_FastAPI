@@ -5,11 +5,12 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.core.security import oauth2_scheme
 from app.utils import decode_access_token
+from app.database.models import Seller
 
 
 from ..schemas.seller import SellerCreate, SellerRead
 
-from ..dependencies import  SellerServiceDep
+from ..dependencies import  SellerServiceDep, SessionDep
 
 
 router = APIRouter(prefix="/seller", tags=["Seller"])
@@ -50,7 +51,10 @@ async def login_seller(
 
 # we want to protect the dashboard access to authenticated or only loged in user and for that we need to recieve access token in routehandler, And to do that, we simply need the Oauth2 password bearer and use it as a dependency in our endpoint
 @router.get("/dashboad")
-async def get_dashboard(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_dashboard(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    session: SessionDep,
+    ):
 
     data =  decode_access_token(token)
 
@@ -60,12 +64,17 @@ async def get_dashboard(token: Annotated[str, Depends(oauth2_scheme)]):
             detail="Invalid access token"
         )
 
+    #valid authenticated user
+    seller = session.get(Seller, data["user"]["id"])
+
+
     return {
         "details": "Successfully Authenticated!",
-        "data": data
+        
         
     }
 
+    # by this we have authenticated user from provided access token, now we can identify them as well from decode data
 
 
 

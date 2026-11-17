@@ -51,6 +51,9 @@ class SellerService:
 
         seller = result.scalar() #Fetch the first column of the first row, and close the result set.
 
+
+        # self.session.get(Seller, seller.id) >> we will add this data in access token insted so it will be easier for us to find the data and later on 
+
         if seller is None or not password_context.verify(
                     password, # plain password (secret)
                     seller.password_hash, #password hash
@@ -85,7 +88,7 @@ class SellerService:
         token = generate_access_token(data={
             "user": {
                 "name": seller.name,
-                "email": seller.email,
+                "id": seller.id,
             }
         })
 
