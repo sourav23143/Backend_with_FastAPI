@@ -19,6 +19,13 @@ class DatabaseSettings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
 
+
+    REDIS_HOST: str
+    REDIS_PORT: str
+
+
+
+    
     # by this we have defined our fields, that is the environment variables which we wish to read, 
     # we have to point it to environment file as well , and for it we will use config 
 

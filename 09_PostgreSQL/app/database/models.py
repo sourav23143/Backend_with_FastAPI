@@ -1,7 +1,7 @@
 from enum import Enum
 from datetime import datetime
 from pydantic import EmailStr
-from sqlmodel import Field, SQLModel  # which we need to inherit to turn a normal Python class into a SQL model compatible with tables inside of our database
+from sqlmodel import Field, SQLModel, Relationship # which we need to inherit to turn a normal Python class into a SQL model compatible with tables inside of our database
 
 
 class ShipmentStatus(str, Enum): #str makes each enum member a string as well as an enum member.
@@ -33,6 +33,11 @@ class Shipment(SQLModel, table=True):
     destination: int
     status: ShipmentStatus
     estimated_delivery: datetime  #datetime(year, month, day[, hour[, minute[, second[, microsecond[,tzinfo]]]]])
+
+    seller_id: int = Field(foreign_key="seller.id") #foreign key which is realeated with seller
+    # if we dont have __tablename__, for defined model name, so by default it will be class name in lower case
+
+
 
 # BENIFIT OF USING A MODEL LIKE THIS IS NOT TO JUST DEFINE THE TABLE, AS WELL AS USE THIS MODEL TO GET DATA OR SEND DATA TO THE DATABASE AS WELL
 # I.E IF WE GET DATA BACK FROM OUR DATABASE SESSION, WE WILL GET IT AS AN INSTANCE OF THIS SHIPMENT CLASS

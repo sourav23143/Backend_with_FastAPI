@@ -7,7 +7,7 @@ from app.database.models import Shipment, ShipmentStatus
 from app.database.session import SessionDep, create_db_tables, get_session
 from app.services.shipment import ShipmentService
 
-from ..dependencies import ShipmentServiceDep
+from ..dependencies import ShipmentServiceDep, SellerDep
 
 # from .database import Database
 from ..schemas import ShipmentCreate, ShipmentRead, ShipmentUpdate
@@ -39,7 +39,7 @@ router = APIRouter(prefix="/shipment", tags=["Shipment"])
 @router.get(
     "/", response_model=ShipmentRead
 )  # hinting resonse model > WE USE IT WHEN WE ARE PROVIDING DIFFERENT TYPE, IN THIS CASE A LOOSELY TYPE DICTIONARY AND WE WANT TO IT VALIDATED AGAINST THIS SCHEMA
-async def get_shipment(id: int, service: ShipmentServiceDep):
+async def get_shipment(id: int, _: SellerDep,  service: ShipmentServiceDep): # because we dont have used SellerDep, we have substitute it with "_", which is just convention 
     # Check for shipment with given id
     shipment = await service.get(id)
 
@@ -73,6 +73,7 @@ async def get_shipment(id: int, service: ShipmentServiceDep):
 ### Create shipment
 @router.post("/")
 async def submit_shipment(
+    seller: SellerDep,
     shipment: ShipmentCreate,
     service: ShipmentServiceDep,
 ) -> Shipment:

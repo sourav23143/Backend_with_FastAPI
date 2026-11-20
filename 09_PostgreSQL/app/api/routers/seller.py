@@ -3,6 +3,8 @@ from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
+
+from app.database.redis import add_jti_to_blacklist
 from app.core.security import oauth2_scheme
 from app.utils import decode_access_token
 from app.database.models import Seller
@@ -10,7 +12,7 @@ from app.database.models import Seller
 
 from ..schemas.seller import SellerCreate, SellerRead
 
-from ..dependencies import  SellerServiceDep, SessionDep
+from ..dependencies import  SellerServiceDep, SessionDep, get_access_token
 
 
 router = APIRouter(prefix="/seller", tags=["Seller"])
@@ -48,33 +50,49 @@ async def login_seller(
 
 
 
+### logout the seller
+@router.get("/logout")
+async def logout_seller(
+    token_data: Annotated[dict, Depends(get_access_token)],
+):  
 
-# we want to protect the dashboard access to authenticated or only loged in user and for that we need to recieve access token in routehandler, And to do that, we simply need the Oauth2 password bearer and use it as a dependency in our endpoint
-@router.get("/dashboad")
-async def get_dashboard(
-    token: Annotated[str, Depends(oauth2_scheme)],
-    session: SessionDep,
-    ):
 
-    data =  decode_access_token(token)
-
-    if data is None: 
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid access token"
-        )
-
-    #valid authenticated user
-    seller = session.get(Seller, data["user"]["id"])
-
+    await add_jti_to_blacklist(token_data["jti"])
 
     return {
-        "details": "Successfully Authenticated!",
-        
-        
+        "detail": "successfully logged out "
     }
+  
 
+
+
+
+
+
+
+
+
+# we want to protect the dashboard access to authenticated or only loged in user and for that we need to recieve access token in routehandler, And to do that, we simply need the Oauth2 password bearer and use it as a dependency in our endpoint
+# @router.get("/dashboad")
+# async def get_dashboard(
+#     token: Annotated[str, Depends(oauth2_scheme)],
+#     session: SessionDep,
+#     ) -> Seller:
+
+
+
+#     #valid authenticated user
+#     seller = await session.get(Seller, data["user"]["id"])
+
+
+#     return seller
     # by this we have authenticated user from provided access token, now we can identify them as well from decode data
+
+
+
+
+
+
 
 
 
