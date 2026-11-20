@@ -88,7 +88,7 @@ class SellerService:
         token = generate_access_token(data={
             "user": {
                 "name": seller.name,
-                "id": seller.id,
+                "id": str(seller.id),   # because seller.id is in UUID type, it cannot be encoded in json format , so we have changed it to string type, so beacuse here we enoded then we have use uuid, then have smae to do when decoded
             }
         })
 

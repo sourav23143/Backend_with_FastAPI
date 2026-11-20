@@ -1,8 +1,9 @@
 from enum import Enum
 from datetime import datetime
+from uuid import uuid4, UUID
 from pydantic import EmailStr
-from sqlmodel import Field, SQLModel, Relationship # which we need to inherit to turn a normal Python class into a SQL model compatible with tables inside of our database
-
+from sqlmodel import Column, Field, SQLModel, Relationship # which we need to inherit to turn a normal Python class into a SQL model compatible with tables inside of our database
+from sqlalchemy.dialects import postgresql 
 
 class ShipmentStatus(str, Enum): #str makes each enum member a string as well as an enum member.
     placed = "placed"
@@ -27,16 +28,27 @@ class Shipment(SQLModel, table=True):
     # But we can go ahead and define custom one as well > 
     __tablename__ = "shipment"
 
-    id: int = Field(default=None, primary_key=True) # now because primary key is set to True and now if we not provide any id, it will automatically generate a unique id which will be like incrementing to new one
+    
+    # id: int = Field(default=None, primary_key=True) # now because primary key is set to True and now if we not provide any id, it will automatically generate a unique id which will be like incrementing to new one
+    id: UUID = Field(
+        sa_column=Column(
+            postgresql.UUID,
+            default=uuid4, 
+            primary_key=True)
+            ),
     content: str
     weight: float = Field(le=25, )
     destination: int
     status: ShipmentStatus
     estimated_delivery: datetime  #datetime(year, month, day[, hour[, minute[, second[, microsecond[,tzinfo]]]]])
 
-    seller_id: int = Field(foreign_key="seller.id") #foreign key which is realeated with seller
-    # if we dont have __tablename__, for defined model name, so by default it will be class name in lower case
+    #seller_id: int = Field(foreign_key="seller.id") #foreign key which is realeated with seller
+    seller_id: UUID = Field(foreign_key="seller.id")
 
+    # if we dont have __tablename__, for defined model name, so by default it will be class name in lower case
+    seller: "Seller" = Relationship(
+        back_populates="shipments",
+        sa_relationship_kwargs={"lazy": "selectin"})
 
 
 # BENIFIT OF USING A MODEL LIKE THIS IS NOT TO JUST DEFINE THE TABLE, AS WELL AS USE THIS MODEL TO GET DATA OR SEND DATA TO THE DATABASE AS WELL
@@ -46,11 +58,22 @@ class Shipment(SQLModel, table=True):
 class Seller(SQLModel, table = True):
 
     # by default table name will be class name only, so we have not added any table name
-    id: int = Field(default=None, primary_key=True)
+    # id: int = Field(default=None, primary_key=True)
+    id: UUID = Field(
+        sa_column=Column(
+            postgresql.UUID,
+            default=uuid4, 
+            primary_key=True)
+            ),
     name: str
 
     email: EmailStr
     password_hash: str
+
+    shipmnets: list[Shipment] = Relationship(
+        back_populates="seller",
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )
 
 
 # NOW WE HAVE ADDED THE SELLER TABLE TO OUR DATABASE, NOW WE CAN GO AHEAD AND RECIEVE THE DATA FOR A NEW SELLER IN THE ENDPOINT

@@ -7,7 +7,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from sqlmodel import SQLModel, Field
 from app.database.models import ShipmentStatus
-
+from uuid import UUID
 
 
 
@@ -28,6 +28,7 @@ class BaseShipment(SQLModel):
 
 
 class ShipmentRead(BaseShipment):
+    id: UUID
     status: ShipmentStatus
     estimated_delivery: datetime
 
