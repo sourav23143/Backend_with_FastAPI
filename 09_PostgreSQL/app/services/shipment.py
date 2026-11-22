@@ -3,7 +3,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta, timezone
 
-from app.database.models import Shipment
+from app.database.models import Seller, Shipment
 from app.api.schemas.shipment import ShipmentCreate, ShipmentUpdate
 from app.database.models import ShipmentStatus
 
@@ -19,12 +19,15 @@ class ShipmentService:
         return await self.session.get(Shipment, id)
 
 
-    async def add(self, shipment_create: ShipmentCreate) -> Shipment:
+    async def add(self, shipment_create: ShipmentCreate, seller: Seller) -> Shipment:
         new_shipment = Shipment(
                 **shipment_create.model_dump(),
                 status = ShipmentStatus.placed,
-                estimated_delivery = datetime.now(timezone.utc) + timedelta(days=3) #Time delta is difference b/w two datetime object , And we can use it to create simple difference b/w times as well 
+                estimated_delivery = datetime.now(timezone.utc) + timedelta(days=3), #Time delta is difference b/w two datetime object , And we can use it to create simple difference b/w times as well 
+                seller_id=seller.id, #foreign key setup in shipment and relationship as well 
+                # seller=seller # insted seller_id=seller.id to work we can directly provide seller as well because we have relationship set up and this will work as well.
             ) # id will get auto generated , when we add this model to the database with default or none ID, it will go ahead and generate a unique id for us, based on maximum number  and we can access it after we commit the changes to our database session
+        
         
         self.session.add(new_shipment) # for add method we not have to wait, as it return None, not a coroutine, so no await 
         await self.session.commit()

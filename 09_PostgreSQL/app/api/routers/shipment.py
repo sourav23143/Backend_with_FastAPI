@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any
+from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status
 
@@ -39,7 +40,7 @@ router = APIRouter(prefix="/shipment", tags=["Shipment"])
 @router.get(
     "/", response_model=ShipmentRead
 )  # hinting resonse model > WE USE IT WHEN WE ARE PROVIDING DIFFERENT TYPE, IN THIS CASE A LOOSELY TYPE DICTIONARY AND WE WANT TO IT VALIDATED AGAINST THIS SCHEMA
-async def get_shipment(id: int, _: SellerDep,  service: ShipmentServiceDep): # because we dont have used SellerDep, we have substitute it with "_", which is just convention 
+async def get_shipment(id: UUID, _: SellerDep,  service: ShipmentServiceDep): # because we dont have used SellerDep, we have substitute it with "_", which is just convention 
     # Check for shipment with given id
     shipment = await service.get(id)
 
@@ -77,7 +78,7 @@ async def submit_shipment(
     shipment: ShipmentCreate,
     service: ShipmentServiceDep,
 ) -> Shipment:
-    return await service.add(shipment)
+    return await service.add(shipment, seller) # we associate newly create shipment with seller as well, so we will recieve logged in seller here  as well 
 
 
 # ### Update shipment by id

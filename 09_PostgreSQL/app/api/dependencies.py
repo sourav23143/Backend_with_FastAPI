@@ -1,7 +1,7 @@
 
 # IT WILL CONTAINS DEPENDENCIES OF OUR ENDPOINTS
 from typing import Annotated
-from sqlalchemy import UUID
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession

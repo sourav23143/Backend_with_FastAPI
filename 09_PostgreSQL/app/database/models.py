@@ -4,6 +4,7 @@ from uuid import uuid4, UUID
 from pydantic import EmailStr
 from sqlmodel import Column, Field, SQLModel, Relationship # which we need to inherit to turn a normal Python class into a SQL model compatible with tables inside of our database
 from sqlalchemy.dialects import postgresql 
+from sqlalchemy import ARRAY, INTEGER
 
 class ShipmentStatus(str, Enum): #str makes each enum member a string as well as an enum member.
     placed = "placed"
@@ -34,8 +35,16 @@ class Shipment(SQLModel, table=True):
         sa_column=Column(
             postgresql.UUID,
             default=uuid4, 
-            primary_key=True)
-            ),
+            primary_key=True,)
+            )
+    created_at: datetime = Field(
+        sa_column=Column(
+            postgresql.TIMESTAMP,
+            default=datetime.now
+        )
+    )
+
+    
     content: str
     weight: float = Field(le=25, )
     destination: int
@@ -50,12 +59,35 @@ class Shipment(SQLModel, table=True):
         back_populates="shipments",
         sa_relationship_kwargs={"lazy": "selectin"})
 
+    delivery_partner_id: UUID = Field(
+        foreign_key="delivery_partner.id"
+    )
+    delivery_partner: "DeliveryPartner" = Relationship(
+        back_populates="shipments",
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )
 
 # BENIFIT OF USING A MODEL LIKE THIS IS NOT TO JUST DEFINE THE TABLE, AS WELL AS USE THIS MODEL TO GET DATA OR SEND DATA TO THE DATABASE AS WELL
 # I.E IF WE GET DATA BACK FROM OUR DATABASE SESSION, WE WILL GET IT AS AN INSTANCE OF THIS SHIPMENT CLASS
 
 
-class Seller(SQLModel, table = True):
+class User(SQLModel):
+    name: str
+
+    email: EmailStr
+    password_hash: str = Field(exclude=True)
+
+
+
+
+
+
+
+
+
+class Seller(User, table = True):
+
+    __tablename__="seller"
 
     # by default table name will be class name only, so we have not added any table name
     # id: int = Field(default=None, primary_key=True)
@@ -63,14 +95,19 @@ class Seller(SQLModel, table = True):
         sa_column=Column(
             postgresql.UUID,
             default=uuid4, 
-            primary_key=True)
-            ),
-    name: str
+            primary_key=True,)
+            )
 
-    email: EmailStr
-    password_hash: str
+    created_at: datetime = Field(
+        sa_column=Column(
+            postgresql.TIMESTAMP,
+            default=datetime.now
+        )
+    )
 
-    shipmnets: list[Shipment] = Relationship(
+
+
+    shipments: list[Shipment] = Relationship(
         back_populates="seller",
         sa_relationship_kwargs={"lazy": "selectin"},
     )
@@ -80,8 +117,34 @@ class Seller(SQLModel, table = True):
 
 
 
+class DeliveryPartner(User, table=True):
+    __tablename__ = "delivery_partner"
+
+    id: UUID = Field(
+        sa_column=Column(
+            postgresql.UUID,
+            default=uuid4, 
+            primary_key=True,)
+            )
+
+    created_at: datetime = Field(
+        sa_column=Column(
+            postgresql.TIMESTAMP,
+            default=datetime.now
+        )
+    )
 
 
+    serviceable_zip_codes: list[int] = Field(
+        sa_column=Column(ARRAY(INTEGER)),
+    )
+
+    max_handling_capacity: int
+
+    shipments: list[Shipment] = Relationship(
+        back_populates="delivery_partner",
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )
 
 # A database model defines the structure and constraints of stored data. A
 # database session is a temporary workspace used to query and modify that data.

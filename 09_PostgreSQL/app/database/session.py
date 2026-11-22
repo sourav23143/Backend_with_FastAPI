@@ -29,7 +29,7 @@ engine = create_async_engine(
 
 async def create_db_tables():
     async with engine.begin() as connection:
-        from app.database.models import Shipment
+        from app.database.models import Shipment, Seller
 
         await connection.run_sync(SQLModel.metadata.create_all) #Create all tables stored in this metadata.
 
