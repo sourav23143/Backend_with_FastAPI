@@ -146,6 +146,25 @@ class DeliveryPartner(User, table=True):
         sa_relationship_kwargs={"lazy": "selectin"},
     )
 
+
+
+
+    # METHOD TO FIND THE SHIPMENT THAT ARE ACTIVELY HANDLED BY THE DELIVERY PARTNER
+    @property
+    def active_shipments(self):
+        return [
+            shipment
+            for shipment in self.shipments
+            if shipment.status != ShipmentStatus.delivered
+        ]
+
+    # AMOUNT OF SHIPMENT DELIVERY PARTNER CAN HANDLE AT THE MOMENT
+    @property
+    def current_handling_capacity(self):
+        return self.max_handling_capacity - len(self.active_shipments)
+
+
+
 # A database model defines the structure and constraints of stored data. A
 # database session is a temporary workspace used to query and modify that data.
 #

@@ -8,7 +8,8 @@ from fastapi.security import HTTPBearer
 # #OAuth2 flow for authentication using a bearer token obtained with a password when logged in . An instance of it would be used as a dependency to get that bearer token
 # from app.utils import decode_access_token
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/seller/token") # takes in token url i.e endpoint url from which token are generated 
+oauth2_scheme_seller = OAuth2PasswordBearer(tokenUrl="/seller/token") # takes in token url i.e endpoint url from which token are generated 
+oauth2_scheme_partner = OAuth2PasswordBearer(tokenUrl="/partner/token")
 # and now in turn we can use this as dependency in our route
 
 #______________________________________________________________________________________________________________________

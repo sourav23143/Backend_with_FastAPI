@@ -2,7 +2,7 @@
 
 
 from fastapi import APIRouter
-from .routers import shipment, seller
+from .routers import shipment, seller, delivery_partner
 
 
 # we will create a master router which will include all of the routers inside of  routers package, which we can include inside our main module 
@@ -14,3 +14,4 @@ master_router = APIRouter()
 
 master_router.include_router(shipment.router)
 master_router.include_router(seller.router)
+master_router.include_router(delivery_partner.router)

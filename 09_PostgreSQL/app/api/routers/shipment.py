@@ -8,7 +8,7 @@ from app.database.models import Shipment, ShipmentStatus
 from app.database.session import SessionDep, create_db_tables, get_session
 from app.services.shipment import ShipmentService
 
-from ..dependencies import ShipmentServiceDep, SellerDep
+from ..dependencies import DeliveryPartnerDep, ShipmentServiceDep, SellerDep
 
 # from .database import Database
 from ..schemas import ShipmentCreate, ShipmentRead, ShipmentUpdate
@@ -113,9 +113,10 @@ async def submit_shipment(
 
 
 ### Update shipment by id
+# Only logged in delivery Partner can update a shipment
 @router.patch("/", response_model=ShipmentRead)
 async def update_shipment(
-    id: int, shipment_update: ShipmentUpdate, service: ShipmentServiceDep
+    id: UUID, shipment_update: ShipmentUpdate, service: ShipmentServiceDep, partner: DeliveryPartnerDep
 ) -> dict[str, Any]:
 
     # Update data with given fields
@@ -150,7 +151,7 @@ async def update_shipment(
 
 ### Delete a shipment by id
 @router.delete("/")
-async def delete_shipment(id: int, service: ShipmentServiceDep) -> dict[str, str]:
+async def delete_shipment(id: UUID, service: ShipmentServiceDep) -> dict[str, str]:
     # Remove from database
     await service.delete(id)
     return {"detail": f"Shipment with id #{id} is deleted!"}
